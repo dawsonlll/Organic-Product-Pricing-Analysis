@@ -30,3 +30,4 @@ simulated_data <- data.frame(
 )
 
 write_csv(simulated_data, "data/00-simulated_data/simulated_data.csv")
+
