@@ -1,14 +1,17 @@
 ---
-title: "My title"
-subtitle: "My subtitle if needed"
+title: "Pricing Patterns in Organic Markets"
+subtitle: " Comparative Analysis of Vendor Strategies and Seasonal Trends in Organic Product Sales"
 author: 
-  - First author
-  - Another author
-thanks: "Code and data are available at: [https://github.com/RohanAlexander/starter_folder](https://github.com/RohanAlexander/starter_folder)."
+  - Dingshuo Li
+thanks: "Code and data are available at: [https://github.com/dawsonlll/Organic-Product-Pricing-Analysis.git](https://github.com/RohanAlexander/starter_folder)."
 date: today
 date-format: long
 abstract: "First sentence. Second sentence. Third sentence. Fourth sentence."
-format: pdf
+format:
+  pdf:
+    toc: true
+  html:
+    toc: true
 number-sections: true
 bibliography: references.bib
 ---
@@ -20,20 +23,42 @@ bibliography: references.bib
 
 library(tidyverse)
 library(palmerpenguins)
+library(rstanarm)
+library(modelsummary)
+library(ggplot2)
+library(arrow)
+library(here)
+library(modelr)
+library(knitr)
+library(rstanarm)
+library(broom)
+library(scales)
+library(splines)
+opts_knit$set(root.dir = here::here())
 ```
 
+```{r}
+#| include: false
+#| warning: false
+#| message: false
+setwd(here::here())
+organic_analysis_data <- read_parquet("data/02-analysis_data/analysis_data.parquet")
+bayesian_price_model <- readRDS(file = here::here("models/bayesian_price_model.rds"))
+```
 
 # Introduction
 
-Overview paragraph
+The organic food market has witnessed a remarkable surge in demand, driven by increasing consumer awareness of health and environmental impacts. This demand has not only heightened the market value of organic products but has also introduced complexities into their pricing strategies across various retail platforms. Notably, organic food typically incurs higher production and certification costs compared to conventional food products, influencing its retail pricing and accessibility. This study aims to dissect these pricing strategies by examining how the prices of organic foods vary across different vendors and over successive months.
 
-Estimand paragraph
+This paper explores the intricate dynamics of organic food pricing within a well-defined dataset that records prices from multiple vendors over a specified period. The analysis is structured to address a gap in existing research: the detailed quantification of how prices for organic products are structured and vary in a real-market scenario. Utilizing advanced Bayesian statistical methods, this research assesses the relationship between current and historical prices while considering the influence of temporal factors captured through monthly variations.
 
-Results paragraph
+Estimand: The primary estimand of this study is the price elasticity of organic foods across different market vendors and months. Specifically, the analysis seeks to estimate how changes in the historical prices (old prices) influence the current pricing strategies, adjusting for variations across months and between vendors. This will allow us to quantify the direct and interactive effects of time (month) and vendor on the current prices of organic products, providing insights into the responsiveness of organic food prices to market dynamics and vendor-specific factors.
 
-Why it matters paragraph
+The findings reveal distinct pricing patterns that differ by vendor and demonstrate notable fluctuations corresponding to seasonal trends. These insights are crucial for consumers making informed purchasing decisions and for vendors strategizing to capture or expand market share in the competitive organic food sector. The importance of understanding these pricing mechanisms lies in its potential to influence marketing strategies, consumer spending, and ultimately, the economic sustainability of organic farming practices.
 
-Telegraphing paragraph: The remainder of this paper is structured as follows. @sec-data....
+
+The paper is structured to provide a clear, logical flow from methodology to implications @sec-data outlines our dataset selection and cleaning, ensuring transparency. The @sec-model details the Bayesian model and its rationale, directly linked to our data preparation. The @sec-result displays our findings with visual aids, while the @sec-discussion interprets these findings in the context of broader market dynamics. Finally, @sec-limitation  highlights areas for further study, acknowledging any constraints encountered.
+
 
 
 
@@ -85,14 +110,6 @@ And also planes (@fig-planes). (You can change the height and width, but don't w
 #| warning: false
 #| message: false
 
-analysis_data <- read_csv(here::here("data/02-analysis_data/analysis_data.csv"))
-
-analysis_data |> 
-  ggplot(aes(x = width, y = length)) +
-  geom_point(alpha = 0.8) +
-  theme_minimal() +
-  labs(x = "Wing width (mm)",
-       y = "Wing length (mm)")
 ```
 
 Talk way more about it. 
@@ -134,9 +151,10 @@ We run the model in R [@citeR] using the `rstanarm` package of @rstanarm. We use
 
 ### Model justification
 
-We expect a positive relationship between the size of the wings and time spent aloft. In particular...
+```{r}
 
-We can use maths by including latex between dollar signs, for instance $\theta$.
+
+```
 
 
 # Results
@@ -148,11 +166,14 @@ Our results are summarized in @tbl-modelresults.
 #| eval: true
 #| warning: false
 #| message: false
+modelsummary::modelsummary(
+  list(
+    "Bayesian_model" = bayesian_price_model
+  ),
+  statistic = "mad",
+  fmt = 2
+)
 
-library(rstanarm)
-
-first_model <-
-  readRDS(file = here::here("models/first_model.rds"))
 ```
 
 ```{r}
@@ -162,13 +183,6 @@ first_model <-
 #| tbl-cap: "Explanatory models of flight time based on wing width and wing length"
 #| warning: false
 
-modelsummary::modelsummary(
-  list(
-    "First model" = first_model
-  ),
-  statistic = "mad",
-  fmt = 2
-)
 ```
 
 
@@ -217,11 +231,11 @@ In @fig-ppcheckandposteriorvsprior-2 we compare the posterior with the prior. Th
 #| fig-cap: "Examining how the model fits, and is affected by, the data"
 #| fig-subcap: ["Posterior prediction check", "Comparing the posterior with the prior"]
 
-pp_check(first_model) +
+pp_check(bayesian_price_model) +
   theme_classic() +
   theme(legend.position = "bottom")
 
-posterior_vs_prior(first_model) +
+posterior_vs_prior(bayesian_price_model) +
   theme_minimal() +
   scale_color_brewer(palette = "Set1") +
   theme(legend.position = "bottom") +
@@ -244,9 +258,9 @@ posterior_vs_prior(first_model) +
 #| fig-subcap: ["Trace plot", "Rhat plot"]
 #| layout-ncol: 2
 
-plot(first_model, "trace")
+plot(bayesian_price_model, "trace")
 
-plot(first_model, "rhat")
+plot(bayesian_price_model, "rhat")
 ```
 
 
