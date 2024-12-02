@@ -33,6 +33,8 @@ library(knitr)
 library(rstanarm)
 library(broom)
 library(scales)
+library(bayesplot) 
+
 library(splines)
 opts_knit$set(root.dir = here::here())
 ```
@@ -62,99 +64,144 @@ The paper is structured to provide a clear, logical flow from methodology to imp
 
 
 
-
-
-
 # Data {#sec-data}
 
 ## Overview
 
-We use the statistical programming language R [@citeR].... Our data [@shelter].... Following @tellingstories, we consider...
+All data analysis was conducted using R @citeR, including statistical computing and graphics. And the following R packages were used for conduct code in scripts: tidyverse @tidy, Palmerpenguins @palmerpenguins, ggplot2 @ggplot2, Dplyr @citedplyr, Knitr @citeknitr, modelsummary @modelsummary, arrow @arrow, here @here, rstanarm @rstanarm, sclaes @scales, splines @splines,broom @broom, lubridate @date, janitor @jan and testthat @testthat. Following  @tellingstories we conducted data simulate, test simulated data, data cleanning, test analysis data, EDA, data modelling. The R code in scripts were adapted from @alexander2023telling
 
-Overview text
+
+The dataset under analysis was sourced from Jacob Filipp's Hammer Project @hammerData, which compiles extensive pricing data on organic food products sold across various retail vendors. This dataset is particularly valuable for its comprehensive coverage of both temporal and vendor-specific pricing strategies, offering a unique lens through which seasonal trends and competitive behaviors in the organic food market can be observed. The choice of this dataset was motivated by its granularity and the quality of its data, which includes multiple vendors and a wide temporal range, making it ideal for a nuanced analysis of pricing dynamics.
 
 ## Measurement
 	
-Some paragraphs about how we go from a phenomena in the world to an entry in the dataset.
+The dataset used in this study comes from Jacob Filipp's Hammer Project, which provides detailed records of organic food pricing across retailers and months. This data collection effort captures an important economic and social phenomenon: fluctuating pricing strategies in the competitive organic food market. Prices are recorded monthly to reflect the dynamic nature of these market conditions, providing a comprehensive snapshot that facilitates analysis of trends and pricing behavior over time.
+
+The primary step in capturing the phenomenon involves systematically collecting price data directly from retail sources. This data is gathered from grocery merchants. Each price tag observed represents a specific decision by a vendor regarding how much to charge for an organic product at a given time. So the important variables: current price which is the price of an organic product at the time of data collection. It is observed directly from the vendor. And old price which is the previously recorded price for the same product, which provides a historical comparison point. It helps in understanding how prices are adjusted over time.
+
+Each recorded price becomes an entry in the dataset, associated with metadata that includes the vendor, the time of collection, and the product details. This structured approach ensures that each entry in the dataset is a reliable and accurate representation of the real-world pricing phenomena observed. These entries are then ready for analytical processes that can derive meaningful insights about organic food pricing dynamics.
+
+## Data Cleanning
+The analysis begins with the consolidation of raw data from two distinct sources: product transaction records and product details. These datasets were sourced from the Hammer Project, containing over 12 million rows of diverse product data, including non-organic items and a variety of vendors beyond the scope of this study. The transaction records (raw_data) include timestamps, vendor details, and product identifiers, while the product details (product_data) provide comprehensive information such as product names, brands, pricing history, and unit measurements.
+
+To  conduct analysis, the two datasets were merged using an inner join on the product_id, which serves as a unique identifier linking transaction records to specific product details. This joining process ensured that each transaction record was enriched with relevant product information, creating a comprehensive view of each sale's context.
+
+Post-merger, the dataset still contained an extensive range of products and vendors, many of which were irrelevant to the focus of this study—organic food pricing dynamics among major vendors. To refine the dataset first did vendor selection. The dataset was filtered to include only transactions from major retailers known for their significant market presence and influence in organic food sales, specifically "Metro," "NoFrills," "Walmart," "Voila," "TandT," and "Galleria." This selection was based on the objective to analyze pricing strategies within the most competitive segments of the retail market. A further filtration was applied to isolate organic products. This was achieved by searching for the keyword "organic" within the product_name field, using a case-insensitive search to ensure comprehensive inclusion of all relevant items. This step significantly reduced the dataset size and increased its relevance to the study’s aims. 
+
+The current_price and old_price were parsed to ensure that they were represented as numerical values, free from any non-numeric characters that could interfere with quantitative analysis. This parsing was crucial for accurate statistical calculations and comparisons. The nowtime field, representing the timestamp of each transaction, was used to extract the month component. This transformation was essential for analyzing seasonal trends and month-to-month pricing variations. Lastly, entries with missing or zero values in current_price were removed to maintain the integrity of pricing analysis. Additionally, any remaining rows with incomplete data were dropped, ensuring that the dataset used in subsequent analyses was entirely robust and clean.
 
 ## Outcome variables
-
-Add graphs, tables and text. Use sub-sub-headings for each outcome variable or update the subheading to be singular.
-
-
-
-Some of our data is of penguins (@fig-bills), from @palmerpenguins.
+### Predictor variables
+The old price variable, representing the product's price from the preceding month, serves as a critical metric for understanding the evolution of market trends and pricing strategies over time. The summary @tbl-old-price reveal a broad range of "Old Price" from a minimum of \$1.69 to a maximum of \$38.56, with a median price of \$5.49, suggesting a median market position. The mean, slightly higher at \$7.66, indicates a positive skew in the data, with the first quartile at \$3.99 and the third at $10.49, reflecting substantial variability in historical pricing. This variability underscores the diverse pricing strategies across different vendors and product types, and provides a foundation for analyzing how prices adjust in response to market dynamics, consumer demand, and possibly supply chain fluctuations.
 
 ```{r}
-#| label: fig-bills
-#| fig-cap: Bills of penguins
-#| echo: false
-
-ggplot(penguins, aes(x = island, fill = species)) +
-  geom_bar(alpha = 0.8) +
-  scale_fill_manual(values = c("darkorange","purple","cyan4"),
-                    guide = "none") +
-  theme_minimal() +
-  facet_wrap(~species, ncol = 1) +
-  coord_flip()
-```
-
-Talk more about it.
-
-And also planes (@fig-planes). (You can change the height and width, but don't worry about doing that until you have finished every other aspect of the paper - Quarto will try to make it look nice and the defaults usually work well once you have enough text.)
-
-```{r}
-#| label: fig-planes
-#| fig-cap: Relationship between wing length and width
+#| label: tbl-old-price
+#| tbl-cap: Summary of old price
 #| echo: false
 #| warning: false
 #| message: false
+old_price_summary <- summary(organic_analysis_data$old_price)
+
+# Convert summary statistics into a data frame for better table formatting
+old_price_summary_df <- data.frame(
+  Statistic = c("Min", "1st Qu.", "Median", "Mean", "3rd Qu.", "Max"),
+  Value = as.numeric(old_price_summary)
+)
+
+# Print the summary as a table
+kable(old_price_summary_df, format = "markdown")
+```
+The vendor variable acts as a categorical identifier for retailers within the dataset, providing crucial insights into the diversity of pricing strategies employed across different retail environments. This variable is essential for comparing and contrasting market behaviours as it delineates the dataset into distinct groups based on the retailer. The distribution of data @tbl-Vendor shows that vendors varies significantly, with Metro being the most frequently occurring vendor with 1,981 entries, followed by Voila with 1,513 entries. Walmart, Galleria, TandT, and NoFrills appear with decreasing frequency, suggesting a wide range in the scale and possibly the geographic reach of these retailers. This spread indicates that Metro and Voila dominate this dataset, which could imply a greater influence or market share in the organic products sector compared to the other vendors. Understanding the pricing strategies of these vendors is key to analyzing market trends, as each vendor may react differently to market pressures, consumer preferences, and seasonal changes. Analyzing this variable can reveal patterns that are specific to certain types of retailers and provide valuable insights into the competitive landscape of the organic food market.
+```{r}
+#| label: tbl-Vendor
+#| tbl-cap: Preview of Breakdown of Organic Product Listings by Vendor
+#| echo: false
+#| warning: false
+#| message: false
+vendor_summary <- organic_analysis_data %>%
+  count(vendor) %>%
+  arrange(desc(n))
+
+# Print the table using knitr's kable function
+kable(vendor_summary, format = "markdown", col.names = c("Vendor", "Frequency"))
+
+```
+The "Month" variable in the dataset, recorded as a numerical value, serves as a crucial indicator for analyzing seasonal impacts on organic food pricing. It reflects when the data was collected, revealing essential patterns of how prices fluctuate through different months, likely influenced by consumer demand, supply variations, and promotional periods. The distribution of observations shown in @tbl-month, the peaks are in summer season suggests significant market activity during the summer months, potentially driven by an increased availability of fresh produce or higher consumer buying rates. In contrast, the notably lower entries in spring and winter indicate reduced activity, which could be due to offseason market slowness or less frequent data collection. This variable is integral to understanding how temporal factors influence pricing strategies, providing valuable insights for vendors, consumers, and analysts studying market dynamics in the organic food sector.
+```{r}
+#| label: tbl-month
+#| tbl-cap: Preview of Breakdown of Organic Product Listings by Month
+#| echo: false
+#| warning: false
+#| message: false
+month_summary <- organic_analysis_data %>%
+  count(month) %>%
+  arrange(month)
+kable(month_summary, format = "markdown", col.names = c("Month", "Count"))
 
 ```
 
-Talk way more about it. 
 
-## Predictor variables
+### Response Variable
+The response variable current price represents the most recent price at which organic food products were sold across various vendors. The summary statistics @tbl-current-price for this variable provide a snapshot of its distribution within the dataset. The minimum price recorded is 0.97, indicating a lower-end pricing point for some products, while the maximum price peaks at 29.99, reflecting premium offerings within the organic sector. The first quartile is 3.22, suggesting that at least 25% of the products are priced at or below this level, which could be indicative of basic or smaller-sized organic goods. The median price of 4.49 and the mean of 5.69 suggest a central tendency towards moderately priced items, with the mean being slightly higher due to the influence of more expensive products pulling the average up. The third quartile at 7.49 shows that 75% of the products fall below this price point, highlighting a pricing structure that might cater more to a mid-range consumer segment. This comprehensive look at current price helps in understanding the economic landscape of organic food pricing and its variability, which is crucial for analyzing market strategies and consumer behaviour.
+```{r}
+#| label: tbl-current-price
+#| tbl-cap: Preview of Summary of Current Price
+#| echo: false
+#| warning: false
+#| message: false
+current_price_summary <- summary(organic_analysis_data$current_price)
 
-Add graphs, tables and text.
-
-Use sub-sub-headings for each outcome variable and feel free to combine a few into one if they go together naturally.
-
-
-
-
-
+# Convert summary statistics into a data frame for better table formatting
+current_price_summary_df <- data.frame(
+  Statistic = c("Min", "1st Qu.", "Median", "Mean", "3rd Qu.", "Max"),
+  Value = as.numeric(current_price_summary)
+)
+kable(current_price_summary_df, format = "markdown", col.names = c("Statistic", "Value"))
 
 
+```
 
 # Model
+## Model Overview
+In our study, we are particularly interested in understanding how the current price of organic products is influenced by several key factors: the price of the product in the previous month (old price), the vendor from which the product is purchased, and the time of year (month). To systematically examine these relationships, we developed a Bayesian regression model. This model incorporates these variables to elucidate their impacts on current pricing strategies. By leveraging historical pricing data alongside vendor-specific information and temporal dynamics, our model aims to uncover meaningful patterns that can inform both theoretical understanding and practical applications in market pricing strategies.
 
-The goal of our modelling strategy is twofold. Firstly,...
-
-Here we briefly describe the Bayesian analysis model used to investigate... Background details and diagnostics are included in [Appendix -@sec-model-details].
 
 ## Model set-up
+```{=latex}
+\[
+\text{Current Price}_i = \beta_0 + \beta_1 \times \text{Month}_i + \beta_2 \times \text{Old Price}_i + \sum (\beta_{\text{vendor}} \times \text{Vendor}_i) + \epsilon_i
+\]
 
-Define $y_i$ as the number of seconds that the plane remained aloft. Then $\beta_i$ is the wing width and $\gamma_i$ is the wing length, both measured in millimeters.  
+\text{Where:}
 
-\begin{align} 
-y_i|\mu_i, \sigma &\sim \mbox{Normal}(\mu_i, \sigma) \\
-\mu_i &= \alpha + \beta_i + \gamma_i\\
-\alpha &\sim \mbox{Normal}(0, 2.5) \\
-\beta &\sim \mbox{Normal}(0, 2.5) \\
-\gamma &\sim \mbox{Normal}(0, 2.5) \\
-\sigma &\sim \mbox{Exponential}(1)
-\end{align}
-
-We run the model in R [@citeR] using the `rstanarm` package of @rstanarm. We use the default priors from `rstanarm`.
-
-
-### Model justification
-
-```{r}
-
+\begin{itemize}
+  \item $\text{Current Price}_i$ is the dependent variable representing the price of organic products at time $i$.
+  \item $\text{Month}_i$ is a continuous independent variable reflecting the month of the year to account for seasonal effects on pricing.
+  \item $\text{Old Price}_i$ is a continuous independent variable representing the price of the product in the previous month, allowing for analysis of price evolution.
+  \item $\text{Vendor}_i$ is a categorical variable with levels for each vendor included in the study, capturing vendor-specific pricing strategies.
+  \item $\beta_0$ is the intercept, $\beta_0 \sim \text{Normal}(0, 2.5)$.
+  \item $\beta_1$, the coefficient for Month, $\beta_1 \sim \text{Normal}(0, 2.5)$.
+  \item $\beta_2$, the coefficient for Old Price, $\beta_2 \sim \text{Normal}(0, 2.5)$.
+  \item $\beta_{\text{vendor}}$, coefficients for each vendor level, $\beta_{\text{vendor}} \sim \text{Normal}(0, 2.5)$ for each vendor level.
+  \item $\epsilon_i$ is the error term, assumed to be normally distributed.
+\end{itemize}
 
 ```
+We conducted the Bayesian analysis in R [@citeR], utilizing the `rstanarm` package [@rstanarm]. To maintain consistency and reliability in our modeling approach, we employed the default priors provided by `rstanarm`. These priors are well-suited for a wide range of data types and ensure robustness in the inference process, particularly in complex models such as ours that involve multiple predictors and hierarchical structures.
+
+Normal priors with a mean of 0 and a standard deviation of 2.5 are assigned to the coefficients and the intercept. These priors were chosen to impose a slight regularization effect, reducing the risk of overfitting by moderating the influence of extreme values or outliers in the data.
+
+## Model justification
+The Bayesian linear regression model was selected for this analysis to explore how various factors such as month, old price, and vendor influence the current price of organic products. This model type was chosen due to its flexibility in incorporating prior knowledge and handling uncertainty in estimates, which is particularly beneficial in markets where data may exhibit variability and non-standard distributions. Bayesian methods allow for the integration of prior beliefs or empirical evidence into the analysis, which can be particularly useful when dealing with organic product pricing where past market trends can inform current expectations. The primary assumptions include the linearity between predictors and the outcome, independent and identically distributed residuals, and normally distributed error terms. These assumptions are typical for linear regression but must be validated through diagnostic checks to confirm no significant deviations occur.
+
+Unlike frequentist regression, Bayesian regression provides a probabilistic approach to inference, offering a full posterior distribution of the parameters, which helps in understanding the uncertainty around the estimated effects. This model is robust to various types of data and does not strictly require the normality assumption for residuals that a classical linear regression would. This is particularly beneficial given the often skewed or heterogeneous nature of pricing data. Each predictor's influence is quantified by respective coefficients, adjusted for vendor-specific variations and temporal trends. The use of normal priors for these coefficients is justified by the need to regularize estimates, thus preventing overfitting and ensuring stable predictions even with potentially collinear or sparse data.
+
+
+### Comparison with Alternative Models
+Although a standard multiple linear regression could model continuous outcomes effectively, it lacks the ability to incorporate prior distributions and assess uncertainty comprehensively. odels such as logistic regression or Poisson regression were considered; however, these models are more suited to categorical or count data, respectively. Given that our outcome variable, current price is continuous, a linear approach is more appropriate. These were also evaluated, especially for capturing any non-linear dynamics between the predictors and the current price. While potentially offering a closer fit to certain complex patterns, the increased model complexity could hinder interpretation and require more extensive data to validate effectively.
+
+## Model Vialidation
+Model diagnostics included checks for multicollinearity, heteroscedasticity, and normality of residuals. Posterior predictive checks were performed to ensure the model adequately captures the observed data patterns. These steps help in verifying model assumptions and the appropriateness of the model for the given data. The background details and diagnostics are included in [Appendix -@sec-model-details].
 
 
 # Results
@@ -162,6 +209,8 @@ We run the model in R [@citeR] using the `rstanarm` package of @rstanarm. We use
 Our results are summarized in @tbl-modelresults.
 
 ```{r}
+#| label: tbl-modelresults
+#| tbl-cap: Summary of Bayesian Model
 #| echo: false
 #| eval: true
 #| warning: false
@@ -231,15 +280,6 @@ In @fig-ppcheckandposteriorvsprior-2 we compare the posterior with the prior. Th
 #| fig-cap: "Examining how the model fits, and is affected by, the data"
 #| fig-subcap: ["Posterior prediction check", "Comparing the posterior with the prior"]
 
-pp_check(bayesian_price_model) +
-  theme_classic() +
-  theme(legend.position = "bottom")
-
-posterior_vs_prior(bayesian_price_model) +
-  theme_minimal() +
-  scale_color_brewer(palette = "Set1") +
-  theme(legend.position = "bottom") +
-  coord_flip()
 ```
 
 ## Diagnostics
