@@ -224,15 +224,75 @@ modelsummary::modelsummary(
 )
 
 ```
+The Bayesian regression model's outputs provide insightful revelations about the factors influencing the current prices of organic products. These findings are encapsulated in Table 5, which succinctly presents the estimated coefficients and their respective standard errors. This quantitative output, complemented by the visual representation in the corresponding plot, offers a clear perspective on the relative impacts of each predictor.
+
+The intercept, estimated at 3.53, represents the average base price of organic products when all other predictor variables are held at zero. This baseline offers a benchmark against which the effects of other variables are measured.The coefficient for month, which is -0.42, suggests a monthly decrease in prices. This trend could be indicative of seasonal adjustments, where prices may drop during certain times of the year due to increased supply from harvest periods or reduced consumer demand. The negative value emphasizes the importance of considering temporal factors in pricing strategies. The positive coefficient for old_price (0.62) underscores a significant reliance on historical pricing data. This relationship indicates that prices are likely to increase if they were higher in the preceding period, reflecting perhaps market confidence or ongoing trends in consumer willingness to pay. 
+
+The vendor coefficients reveal distinct pricing strategies among different retailer. vendorVoila shows a notably higher positive coefficient of 1.1), suggesting that this vendor typically prices organic products higher than others. This could reflect a premium branding strategy or a targeted demographic willing to pay more for perceived quality. In contrast, vendorNoFrills and vendorTandT have coefficients of 0.09 and -0.02, respectively, indicating minimal deviation from the baseline prices, possibly due to a competitive pricing strategy aimed at attracting cost-conscious consumers.
+
+
 
 ```{r}
+#| label: fig-vendor
+#| fig-cap: Outliers and trends in Pricing Between Different Vendors
 #| echo: false
 #| eval: true
-#| label: tbl-modelresults
-#| tbl-cap: "Explanatory models of flight time based on wing width and wing length"
 #| warning: false
+#| message: false
+
+ggplot(organic_analysis_data, aes(x = vendor, y = current_price)) +
+  geom_boxplot() +
+  labs(title = "Current Prices by Vendor", x = "Vendor", y = "Current Price") +
+  theme(axis.text.x = element_text(angle = 45, hjust = 1))
 
 ```
+
+```{r}
+#| label: fig-price
+#| fig-cap: Price Trends in Different Vendor Over Months
+#| echo: false
+#| eval: true
+#| warning: false
+#| message: false
+ggplot(organic_analysis_data, aes(x = month, y = current_price, color = vendor)) +
+  geom_line(aes(group = interaction(vendor, month)), linewidth = 1) +  # Updated line
+  geom_line(aes(y = old_price), linetype = "dashed") +
+  facet_wrap(~vendor) +
+  labs(title = "Price Trends by Vendor and Month",
+       x = "Month",
+       y = "Price ($)",
+       color = "Vendor") +
+  theme_minimal()
+```
+
+
+```{r}
+#| label: fig-trends
+#| fig-cap: Difference between Old Price and Current Price of Organic product
+#| eval: true
+#| echo: false
+#| warning: false
+#| message: false
+ggplot(organic_analysis_data, aes(x = month)) +
+  geom_smooth(aes(y = current_price, colour = "Current Price"), se = FALSE) +
+  geom_smooth(aes(y = old_price, colour = "Old Price"), se = FALSE) +
+  labs(title = "Current and Old Prices Over Time",
+       x = "Month",
+       y = "Price ($)",
+       color = "Price Type") +
+  scale_color_manual(values = c("Current Price" = "blue", "Old Price" = "red")) +
+  theme_minimal()
+
+
+
+
+```
+
+
+
+
+
+
 
 
 
