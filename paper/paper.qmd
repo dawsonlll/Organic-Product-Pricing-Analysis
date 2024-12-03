@@ -208,7 +208,7 @@ Model diagnostics included checks for multicollinearity, heteroscedasticity, and
 
 Our results are summarized in @tbl-modelresults.
 
-```{r}
+```{r tbl.pos='H'}
 #| label: tbl-modelresults
 #| tbl-cap: Summary of Bayesian Model
 #| echo: false
@@ -232,7 +232,8 @@ The vendor coefficients reveal distinct pricing strategies among different retai
 
 
 
-```{r}
+
+```{r fig.pos='H'}
 #| label: fig-vendor
 #| fig-cap: Outliers and trends in Pricing Between Different Vendors
 #| echo: false
@@ -240,14 +241,23 @@ The vendor coefficients reveal distinct pricing strategies among different retai
 #| warning: false
 #| message: false
 
-ggplot(organic_analysis_data, aes(x = vendor, y = current_price)) +
-  geom_boxplot() +
-  labs(title = "Current Prices by Vendor", x = "Vendor", y = "Current Price") +
-  theme(axis.text.x = element_text(angle = 45, hjust = 1))
+organic_analysis_data$price_change = organic_analysis_data$current_price - organic_analysis_data$old_price
+
+# Scatter plot of Price Change vs. Month, color-coded by Vendor
+ggplot(organic_analysis_data, aes(x = month, y = price_change, color = vendor)) +
+  geom_point(alpha = 0.6, size = 3) +
+  geom_smooth(se = FALSE) +
+  labs(title = "Monthly Price Change by Vendor",
+       x = "Month",
+       y = "Price Change ($)",
+       color = "Vendor") +
+  theme_minimal()
 
 ```
+The @fig-vendor illustrates the changes in pricing for organic products offered by six vendors over three key months: March, June, and September. It reveals that most vendors have adjusted their prices moderately, with the majority of changes clustering a little below the $5 mark. This pattern suggests a trend where vendors generally reduce their prices slightly, potentially reflecting seasonal promotions or responses to market dynamics. Notably, some vendors like Metro exhibit more dramatic price reductions, indicating aggressive pricing strategies or perhaps an adjustment to overstock situations. This subtle yet consistent price reduction across most vendors could imply a market-wide strategy to boost sales volumes by making organic products more affordable to a broader customer base during these months.
 
-```{r}
+
+```{r fig.pos='H'}
 #| label: fig-price
 #| fig-cap: Price Trends in Different Vendor Over Months
 #| echo: false
@@ -264,9 +274,13 @@ ggplot(organic_analysis_data, aes(x = month, y = current_price, color = vendor))
        color = "Vendor") +
   theme_minimal()
 ```
+In the @fig-price, the pricing trends of presumably organic food items across six different vendors are displayed over months. The graph is segmented into six panels, each corresponding to a vendor: Galleria, Metro, NoFrills, TandT, Voila, and Walmart, allowing for a direct comparison of price fluctuations across different time points within the year. Each vendor's pricing data is presented with a unique colour code, maintaining consistency across the panels, which aids in quick visual comparison and analysis. 
+
+The analysis of the graph reveals distinct trends and behaviors among the vendors. Galleria shows a minor incremental trend in pricing, suggesting a stable market position. In contrast, Metro displays notable volatility, with significant price spikes evident in June. NoFrills exhibits very limited data variability in the graph, which could be indicative of several market behaviors or strategies. This minimal fluctuation in pricing might suggest that NoFrills does not have a significant inventory of organic food products, perhaps due to a strategic focus on other product lines or a customer base that is less inclined towards organic options.  TandT's prices slightly decline over the observed months, potentially reflecting seasonal promotions or inventory adjustments. Voila exhibits the most variability, with prices peaking significantly in summer seasons, which may reflect dynamic pricing strategies in response to demand changes or supply issues. Walmart, similar to Voila, shows price fluctuations with an increasing trend towards variability as the year progresses.
 
 
-```{r}
+
+```{r fig.pos='H'}
 #| label: fig-trends
 #| fig-cap: Difference between Old Price and Current Price of Organic product
 #| eval: true
@@ -287,7 +301,9 @@ ggplot(organic_analysis_data, aes(x = month)) +
 
 
 ```
+The @fig-trends delineates the evolution of pricing data under two categories: "Current Price" and "Old Price," over the months. This graphical representation enables an insightful comparison of the pricing fluctuations throughout the year for a particular product or set of products. The current price, represented in blue, shows a downward trajectory over the year, falling from about 8 dollars to approximately 4 dollars. Conversely, the old price, depicted in red, demonstrates a similar decline from March to June but maintains a level higher than the current price during this period. Notably, there is a sharp dip in September where it plunges to below 6 dollars before slightly recovering. This divergence between the current and old prices from June to September, where the current price escalates substantially while the old price sharply declines, may suggest responses to external market forces such as supply chain disruptions, variations in seasonal demand, or changes in promotional strategies that impact pricing structures. Particularly, the pronounced drop in the old price during September could indicate strategies such as clearance sales or pricing adjustments intended to clear existing inventory or adapt to waning demand.
 
+This overall trend where the current prices fall below the old prices could indicate a reduction in the market price of organic food. Several factors could contribute to this phenomenon, such as increased supply of organic products, enhanced efficiency in organic farming techniques, or perhaps a decrease in consumer demand. Moreover, such a price drop could also be a strategic response by retailers to attract more customers or to remain competitive in the market, especially if other factors like seasonal variations or promotional efforts play a role.
 
 
 
@@ -299,19 +315,35 @@ ggplot(organic_analysis_data, aes(x = month)) +
 
 # Discussion
 
-## First discussion point {#sec-first-point}
+## Overview of Study {#sec-first-point}
 
-If my paper were 10 pages, then should be be at least 2.5 pages. The discussion is a chance to show off what you know and what you learnt from all this. 
+This paper investigates the pricing dynamics of organic products across various vendors over distinct months, employing a Bayesian regression model to elucidate the factors that significantly influence pricing. The model's findings, presented in @tbl-modelresults, highlight how both temporal elements and historical pricing data impact current pricing strategies, alongside vendor-specific behaviors. Through a detailed examination of changes in pricing by month and vendor, the study offers a granular look at how seasonal adjustments, market confidence, and competitive strategies shape the pricing landscape of organic products.
 
-## Second discussion point
+## Insights on Market Behaviour
 
-Please don't use these as sub-heading labels - change them to be what your point actually is.
+The first significant learning from this study is the clear indication of seasonal pricing impacts. The negative coefficient for month suggests that prices generally decrease over time, likely due to seasonal produce availability or a strategic reduction in prices to clear inventory before new stock arrives. Additionally, this trend likely reflects the agricultural cycles of organic products, where increased supply during harvest periods may lead to reduced prices. This seasonal adjustment could be a strategic response to fluctuating consumer demand, which often wanes after peak buying seasons. Understanding these trends is crucial for retailers and suppliers in planning inventory and promotional strategies.
 
-## Third discussion point
+A second crucial revelation from the study pertains to the significant influence of historical prices on current pricing strategies. The regression model reveals this through a coefficient of 0.62 for old prices, indicating a strong positive relationship. This relationship suggests that vendors heavily consider past pricing when setting current prices, likely aiming to maintain price consistency and build consumer trust. Such a strategy may reflect market confidence, where past prices help shape consumer perceptions of value and quality, especially in markets where organic products are seen as premium goods.
 
-## Weaknesses and next steps
 
-Weaknesses and next steps should also be included.
+### Historical Pricing as a Market Predictor
+Another critical observation from the study is the role of historical prices in shaping current pricing strategies. The positive relationship between past and present prices suggests a form of price inertia, where past price levels serve as a baseline for current pricing decisions. This phenomenon could be driven by consumer perceptions of value and quality, which once established, can allow retailers to maintain higher price points. This aspect of the pricing strategy is particularly relevant in the organic market, where consumers are often willing to pay a premium for products they perceive as healthier or more ethically produced. Retailers leveraging this insight might focus on building and maintaining a strong brand reputation that supports higher pricing.
+
+The persistence of higher prices from one period to the next suggests a robust market memory and potentially indicates consumer tolerance for higher price points. This finding is highly relevant in the organic market, where branding and perceived quality are pivotal. Consumers often associate higher prices with superior quality, and this perception enables vendors to maintain premium pricing strategies, even amidst market fluctuations. This insight is particularly important for organic products, where quality and ethical sourcing are often key selling points that justify higher price tags. Thus, understanding the impact of historical pricing on current strategies provides vendors with crucial information for crafting effective pricing models that resonate with consumer expectations and sustain market positioning.
+
+### Vendor-Specific Pricing Strategies
+The analysis also highlighted significant differences in pricing strategies among vendors. For instance, the vendor Voila exhibited a notably higher coefficient of 1.1, suggesting a premium pricing strategy that targets consumers willing to pay more for perceived quality. In contrast vendors such as NoFrills and TandT appear to have a limited selection of organic food products, as evidenced by their minimal price variability and relatively small deviations from baseline pricing. This could suggest that organic products are not a significant focus in their inventory, possibly due to their target demographic or market strategy. Both vendors might prioritize affordability and accessibility, catering to price-conscious consumers who may not prioritize organic options. This limited emphasis on organic products could also reflect supply chain constraints or a strategic decision to focus on high-demand, non-organic items that align with their cost-competitive positioning in the market. By offering only a small range of organic products, these vendors may be targeting a niche segment of their customer base while maintaining their broader appeal as budget-friendly retailers.
+
+
+## Limitations of the Study
+
+While the study provides valuable insights, several limitations must be acknowledged. First, the reliance on historical pricing data may not fully capture real-time market dynamics or consumer behavior shifts, such as changes in consumer preferences due to economic factors or health trends. Additionally, the model assumes linearity and continuity in price adjustments, which may not hold in real-world scenarios where pricing decisions can be abrupt or influenced by non-continuous factors like marketing campaigns or regulatory changes.
+
+## Future Directions
+
+Moving forward, several avenues can enhance our understanding of organic product pricing. Future research could integrate more granular data, such as specific product types within the organic category, to ascertain if different products exhibit unique pricing behaviors. Additionally, incorporating consumer data, such as demographics and purchase histories, could offer deeper insights into the demand side of the pricing equation. Methodologically, employing non-linear models or machine learning techniques might capture more complex interactions and non-linear dependencies not accommodated by the current model.
+
+Furthermore, expanding the geographic scope to include different regions or comparing urban versus rural markets could reveal broader pricing trends and strategies. Lastly, longitudinal studies extending over several years would help in understanding long-term trends and the effects of macroeconomic factors on organic product pricing.
 
 \newpage
 
