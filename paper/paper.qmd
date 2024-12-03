@@ -70,7 +70,7 @@ The paper is structured to provide a clear, logical flow from methodology to imp
 
 All data analysis was conducted using R @citeR, including statistical computing and graphics. And the following R packages were used for conduct code in scripts: tidyverse @tidy, Palmerpenguins @palmerpenguins, ggplot2 @ggplot2, Dplyr @citedplyr, Knitr @citeknitr, modelsummary @modelsummary, arrow @arrow, here @here, rstanarm @rstanarm, sclaes @scales, splines @splines,broom @broom, lubridate @date, janitor @jan and testthat @testthat. Following  @tellingstories we conducted data simulate, test simulated data, data cleanning, test analysis data, EDA, data modelling. The R code in scripts were adapted from @alexander2023telling
 
-
+### Data Source
 The dataset under analysis was sourced from Jacob Filipp's Hammer Project @hammerData, which compiles extensive pricing data on organic food products sold across various retail vendors. This dataset is particularly valuable for its comprehensive coverage of both temporal and vendor-specific pricing strategies, offering a unique lens through which seasonal trends and competitive behaviors in the organic food market can be observed. The choice of this dataset was motivated by its granularity and the quality of its data, which includes multiple vendors and a wide temporal range, making it ideal for a nuanced analysis of pricing dynamics.
 
 ## Measurement
@@ -82,9 +82,9 @@ The primary step in capturing the phenomenon involves systematically collecting 
 Each recorded price becomes an entry in the dataset, associated with metadata that includes the vendor, the time of collection, and the product details. This structured approach ensures that each entry in the dataset is a reliable and accurate representation of the real-world pricing phenomena observed. These entries are then ready for analytical processes that can derive meaningful insights about organic food pricing dynamics.
 
 ## Data Cleanning
-The analysis begins with the consolidation of raw data from two distinct sources: product transaction records and product details. These datasets were sourced from the Hammer Project, containing over 12 million rows of diverse product data, including non-organic items and a variety of vendors beyond the scope of this study. The transaction records (raw_data) include timestamps, vendor details, and product identifiers, while the product details (product_data) provide comprehensive information such as product names, brands, pricing history, and unit measurements.
+The analysis begins with the consolidation of raw data from two distinct sources: product transaction records and product details. These datasets were sourced from the Hammer Project, containing over 12 million rows of diverse product data, including non-organic items and a variety of vendors beyond the scope of this study. The transaction records raw_data include timestamps, vendor details, and product identifiers, while the product details product_data provide comprehensive information such as product names, brands, pricing history, and unit measurements.
 
-To  conduct analysis, the two datasets were merged using an inner join on the product_id, which serves as a unique identifier linking transaction records to specific product details. This joining process ensured that each transaction record was enriched with relevant product information, creating a comprehensive view of each sale's context.
+To conduct analysis, the two datasets were merged using an inner join on the product_id, which serves as a unique identifier linking transaction records to specific product details. This joining process ensured that each transaction record was enriched with relevant product information, creating a comprehensive view of each sale's context.
 
 Post-merger, the dataset still contained an extensive range of products and vendors, many of which were irrelevant to the focus of this study—organic food pricing dynamics among major vendors. To refine the dataset first did vendor selection. The dataset was filtered to include only transactions from major retailers known for their significant market presence and influence in organic food sales, specifically "Metro," "NoFrills," "Walmart," "Voila," "TandT," and "Galleria." This selection was based on the objective to analyze pricing strategies within the most competitive segments of the retail market. A further filtration was applied to isolate organic products. This was achieved by searching for the keyword "organic" within the product_name field, using a case-insensitive search to ensure comprehensive inclusion of all relevant items. This step significantly reduced the dataset size and increased its relevance to the study’s aims. 
 
@@ -310,9 +310,6 @@ This overall trend where the current prices fall below the old prices could indi
 
 
 
-
-
-
 # Discussion
 
 ## Overview of Study {#sec-first-point}
@@ -352,7 +349,54 @@ Furthermore, expanding the geographic scope to include different regions or comp
 # Appendix {-}
 
 
-# Additional data details
+# Methodological Framework for Data Collection and Analysis in Project Hammer
+
+## Introduction
+Project Hammer is an innovative initiative designed to compile and make available a comprehensive database of historical grocery prices from top grocers’ websites across Canada. This appendix delves into the detailed methodologies used for data collection, sampling, and observational analysis within this project. It also explores the application of simulation techniques and integrates extensive literature to support the methodologies used.
+
+## Data Collection Techniques
+The primary method for data compilation in Project Hammer involved automated web scraping techniques. Scripts were developed to systematically collect price data from various online grocery platforms. This method ensured a high-efficiency collection of large volumes of data while maintaining consistency across different data points.
+
+### Web Scraping: 
+The primary data for Project Hammer was meticulously extracted from various top grocers' websites across Canada. Automated scripts using Python libraries like BeautifulSoup and Selenium were employed to scrape historical price data, ensuring efficient and consistent data retrieval across different data points.
+### API Utilization:
+Where available, APIs provided by grocery chains were utilized to fetch data in a structured format, enhancing the accuracy and reliability of the collected data. This method streamlined the process, reducing the likelihood of errors commonly associated with manual data collection methods.
+
+## Data Integrity and Validation
+Data Cleaning: Rigorous cleaning processes were applied to correct anomalies and fill missing values, ensuring high data quality for analysis.
+Validation Checks: Cross-verification with in-store price checks and secondary sources was conducted periodically to validate the data accuracy.
+Automated Checks: Scripts were run to identify missing data, outliers, and inconsistencies, which were then manually reviewed to determine the cause and necessary corrections.
+
+## Sampling Strategy
+The sampling strategy for Project Hammer was carefully designed to capture a comprehensive and representative dataset of grocery prices across Canada. Given the complex and varied nature of the Canadian grocery market, a stratified sampling approach was deemed most suitable for ensuring the data accurately reflected the diversity of market conditions and pricing strategies employed across different geographical areas and store types. Below is a detailed breakdown of each component of the sampling strategy.
+
+### Geographical Stratification
+Canada was segmented into its major regions: Atlantic Canada, Quebec, Ontario, the Prairies, Alberta, and British Columbia. This segmentation reflects significant regional differences, including population density, urbanization, and economic activity, which can all influence grocery pricing. Within each region, further stratification was employed to differentiate between urban and rural areas. Urban areas tend to have higher competition among grocers and potentially lower prices due to larger market sizes, whereas rural areas might experience higher prices due to fewer competitors and higher logistics costs.
+
+### Random Sampling within Strata
+To achieve a representative sample within each geographical stratum, random sampling was used. This method aims to reduce sampling bias that could skew the analysis, such as overrepresentation of major chains or urban centers. From each geographical and urban stratum, grocery stores were randomly selected. This included large national chains, regional chains, and independent stores to capture a broad spectrum of pricing strategies. Random sampling was not only applied to the selection of stores but also to the timing of data collection. Prices were recorded at different times—weekly, bi-weekly, and monthly—to account for any temporal variations in pricing that could result from promotional activities or seasonal changes.
+
+### Importance of the Sampling Strategy
+This rigorous sampling methodology ensured that the Project Hammer dataset was robust, minimizing the potential biases that can arise from non-random sampling or over-concentration in certain geographical areas or store types. By reflecting the true variance across different market conditions and consumer demographics, the dataset allows for more accurate and generalizable conclusions to be drawn about pricing strategies and market dynamics in the Canadian grocery sector.
+
+## Simulation Techniques
+Simulation techniques were critical in validating the web scraping algorithms and assessing potential sampling biases for Project Hammer. By generating synthetic datasets that emulate the dynamics of the Canadian grocery market, especially focusing on organic food pricing, the project team rigorously tested and refined our data collection and analysis methodologies.
+
+The primary goal of these simulations was to evaluate the performance and accuracy of scraping algorithms and observe the impact of sampling strategies in a controlled environment, avoiding the costs and time associated with real data collection. The synthetic datasets included a wide range of organic food items with varied price points and historical price trends, accurately reflecting real market conditions. This allowed the team to enhance the scraping tools and sampling methods, ensuring they were robust and representative of actual market dynamics.
+
+
+## Linkages to Literature
+The methodologies discussed in this appendix are grounded in established research, drawing on foundational resources like the International Handbook of Survey Methodology @survey and the article Statistical Data Integration in Survey Sampling: A Review. The International Handbook of Survey Methodology provides guidance on survey design, implementation, and ethical considerations. It emphasizes the importance of aligning sampling strategies, such as stratified and cluster sampling, with the survey's objectives to ensure representative data collection. This aligns with the section on sampling strategies in this appendix, where these methods are tailored for accuracy and efficiency. Additionally, the handbook's discussion of data collection methods—such as face-to-face interviews and online surveys—connects with the appendix’s focus on selecting techniques based on the target population and study requirements. Furthermore, the handbook highlights ethical practices, including informed consent and confidentiality, which are reflected in this appendix.
+
+The article Statistical Data Integration in Survey Sampling: A Review @datareview examines combining different data sources to improve survey estimation and analysis. It addresses challenges such as inconsistent structures and biases, which relates to the section on integrating survey and observational data, where merging datasets enhances analysis. The article discusses statistical techniques like propensity score matching and multiple imputation to improve data validity, complementing the appendix’s emphasis on validation. It also highlights the use of simulation studies to test and refine sampling and data collection methods, which aligns with the simulation section in this appendix.
+
+
+
+## Conclusion
+This appendix has provided a detailed account of the sophisticated methodologies employed in Project Hammer to compile a robust database of grocery prices. By leveraging advanced web technologies, adhering to rigorous sampling strategies, and ensuring thorough validation processes, Project Hammer aims to foster more competition and reduce potential collusion in the Canadian grocery sector. These approaches not only ensure the reliability of the findings but also contribute significantly to the broader academic and legal discourse on market competition and regulatory compliance in the grocery sector.
+
+
+
 
 # Model details {#sec-model-details}
 
