@@ -45,7 +45,5 @@ cleaned_data <- joined_data %>%
   tidyr::drop_na()
 
 #### Save data ####
-write_csv(joined_data, "data/02-analysis_data/joined_data.csv")
-write_csv(cleaned_data, "data/02-analysis_data/analysis_data.csv")
 write_parquet(x = cleaned_data, sink = "data/02-analysis_data/analysis_data.parquet")
 
