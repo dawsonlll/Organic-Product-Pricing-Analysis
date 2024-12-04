@@ -17,7 +17,7 @@ set.seed(304)
 #### Simulate data ####
 n <- 10000  # Number of rows to simulate
 vendors <- c("Metro", "Walmart", "NoFrills", "TandT")
-products <- c("Organic", "Non-Organic")
+products <- c("Organic")
 months <- 1:12
 
 
