@@ -1,5 +1,5 @@
 ---
-title: "Datasheets for Datasets: Enhancing Transparency and Accountability in Data Collection '"
+title: "Datasheets for Datasets: Enhancing Transparency and Accountability in Data Collection"
 subtitle: "A Comprehensive Examination of the Project Hammer Grocery Dataset"
 author: 
   - Dingshuo Li
