@@ -1,11 +1,11 @@
 #### Preamble ####
-# Purpose: Tests... [...UPDATE THIS...]
-# Author: Rohan Alexander [...UPDATE THIS...]
-# Date: 26 September 2024 [...UPDATE THIS...]
-# Contact: rohan.alexander@utoronto.ca [...UPDATE THIS...]
+# Purpose: Tests for cleaned data
+# Author: Dingshuo Li
+# Date: 03 December 2024 
+# Contact: dawson.li@mail.utoronto.ca
 # License: MIT
-# Pre-requisites: [...UPDATE THIS...]
-# Any other information needed? [...UPDATE THIS...]
+# Pre-requisites: Cleaned data is saved in analysis data files.
+# Any other information needed? N/A
 
 
 #### Workspace setup ####
@@ -13,9 +13,10 @@ library(tidyverse)
 library(dplyr)
 library(testthat)
 library(readr)
+library(arrow)
 setwd(here::here())
 
-analysis_data <- read_csv("data/02-analysis_data/analysis_data.csv")
+analysis_data <- read_parquet("data/02-analysis_data/analysis_data.parquet")
 
 
 #### Test data ####

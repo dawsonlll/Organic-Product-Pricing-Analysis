@@ -4,7 +4,7 @@
 # Date: 27 November, 2024
 # Contact: dawson.li@mail.utoronto.ca
 # License: MIT
-# Pre-requisites: analysis data is in the folder
+# Pre-requisites: Analysis data is in the analysis data file.
 # Any other information needed? N/A
 
 

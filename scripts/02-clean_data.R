@@ -2,9 +2,9 @@
 # Purpose: Cleans the raw groceries data
 # Author: Dingshuo Li
 # Date: 25 Nov 2024 
-# Contact: dawson.lir@utoronto.ca
+# Contact: dawson.li@mail.utoronto.ca
 # License: MIT
-# Pre-requisites: The raw data is downloaded and is in folder
+# Pre-requisites: The raw data is downloaded and is in raw data files.
 # Any other information needed? N/A
 
 #### Workspace setup ####
